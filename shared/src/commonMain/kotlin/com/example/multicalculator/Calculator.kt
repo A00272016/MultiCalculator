@@ -8,4 +8,7 @@ class Calculator {
     fun subtract(left: Int, right: Int): Int {
         return left - right
     }
+    fun multiply(left: Int, right: Int): Int {
+        return left * right
+    }
 }
