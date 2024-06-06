@@ -1,4 +1,5 @@
-// Copy the package declaration from Greeting.kt and paste it here
+//A00272016 : Milankumar Pandya
+//Assignment-1 Creating a calculator project
 package com.example.multicalculator
 
 class Calculator {
