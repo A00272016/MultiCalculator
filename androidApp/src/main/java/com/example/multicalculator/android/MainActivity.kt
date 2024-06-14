@@ -63,6 +63,16 @@ fun CalcNumericButton(number: Int, display: MutableState<String>) {
         Text(text = number.toString())
     }
 }
+//operation button in the calculator
+@Composable
+fun CalcOperationButton(operation: String, display: MutableState<String>) {
+    Button(
+        onClick = { /* Implement operation logic here */ },
+        modifier = Modifier.padding(4.dp)
+    ) {
+        Text(text = operation)
+    }
+}
 
 
 
