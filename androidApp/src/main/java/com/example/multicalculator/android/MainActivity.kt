@@ -40,4 +40,16 @@ fun CalcRow(display: MutableState<String>, startNum: Int, numButtons: Int) {
         }
     }
 }
+//display of the calculator
+@Composable
+fun CalcDisplay(display: MutableState<String>) {
+    Text(
+        text = display.value,
+        modifier = Modifier
+            .height(45.dp)
+            .padding(4.dp)
+            .fillMaxWidth()
+    )
+}
+
 
