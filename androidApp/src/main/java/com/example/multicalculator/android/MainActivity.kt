@@ -77,11 +77,28 @@ fun CalcOperationButton(operation: String, display: MutableState<String>,
         Text(text = operation)
     }
 }
-// equals button in the calculator
+//equals button in the calculator
 @Composable
-fun CalcEqualsButton(display: MutableState<String>) {
+fun CalcEqualsButton(display: MutableState<String>,
+                     firstNumber: MutableState<Double?>,
+                     operator: MutableState<String?>)
+{
     Button(
-        onClick = { display.value = "0" },
+        onClick = {
+            val secondNumber = display.value.toDouble()
+            firstNumber.value?.let {
+                val result = when (operator.value) {
+                    "+" -> it + secondNumber
+                    "-" -> it - secondNumber
+                    "*" -> it * secondNumber
+                    "/" -> if (secondNumber != 0.0) it / secondNumber else "Error"
+                    else -> "Error"
+                }
+                display.value = result.toString()
+            }
+            operator.value = null
+            firstNumber.value = null
+        },
         modifier = Modifier.padding(4.dp)
     ) {
         Text(text = "=")
