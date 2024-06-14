@@ -116,6 +116,8 @@ fun DefaultPreview() {
 @Composable
 fun CalcView() {
     val displayText = remember { mutableStateOf("0") }
+    val firstNumber = remember { mutableStateOf<Double?>(null) }
+    val operator = remember { mutableStateOf<String?>(null) }
 
     Column(modifier = Modifier.background(Color.LightGray)) {
         Row {
@@ -128,18 +130,17 @@ fun CalcView() {
                 }
                 Row {
                     CalcNumericButton(number = 0, display = displayText)
-                    CalcEqualsButton(display = displayText)
+                    CalcEqualsButton(display = displayText, firstNumber = firstNumber, operator = operator)
                 }
             }
             Column {
                 val operations = listOf("+", "-", "*", "/")
                 for (operation in operations) {
-                    CalcOperationButton(operation = operation, display = displayText)
+                    CalcOperationButton(operation = operation, display = displayText, firstNumber = firstNumber, operator = operator)
                 }
             }
         }
     }
 }
-
 
 
