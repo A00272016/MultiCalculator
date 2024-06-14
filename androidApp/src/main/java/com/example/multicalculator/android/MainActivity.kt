@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-// This is a row in the calculator that holds numeric buttons
+//row in the calculator that holds numeric buttons
 @Composable
 fun CalcRow(display: MutableState<String>, startNum: Int, numButtons: Int) {
     val endNum = startNum + numButtons
@@ -62,9 +62,16 @@ fun CalcNumericButton(number: Int, display: MutableState<String>) {
 }
 //operation button in the calculator
 @Composable
-fun CalcOperationButton(operation: String, display: MutableState<String>) {
+fun CalcOperationButton(operation: String, display: MutableState<String>,
+                        firstNumber: MutableState<Double?>,
+                        operator: MutableState<String?>)
+{
     Button(
-        onClick = { /* Implement operation logic here */ },
+        onClick = {
+            firstNumber.value = display.value.toDouble()
+            operator.value = operation
+            display.value = "0"
+        },
         modifier = Modifier.padding(4.dp)
     ) {
         Text(text = operation)
