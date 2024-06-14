@@ -27,9 +27,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-
-
 // This is a row in the calculator that holds numeric buttons
 @Composable
 fun CalcRow(display: MutableState<String>, startNum: Int, numButtons: Int) {
@@ -81,6 +78,42 @@ fun CalcEqualsButton(display: MutableState<String>) {
         modifier = Modifier.padding(4.dp)
     ) {
         Text(text = "=")
+    }
+}
+// Preview function to see the calculator UI in the preview pane
+@Preview
+@Composable
+fun DefaultPreview() {
+    MyApplicationTheme {
+        CalcView()  // Use the CalcView function here
+    }
+}
+//main view for the calculator
+@Composable
+fun CalcView() {
+    val displayText = remember { mutableStateOf("0") }
+
+    Column(modifier = Modifier.background(Color.LightGray)) {
+        Row {
+            CalcDisplay(display = displayText)
+        }
+        Row {
+            Column {
+                for (i in 7 downTo 1 step 3) {
+                    CalcRow(display = displayText, startNum = i, numButtons = 3)
+                }
+                Row {
+                    CalcNumericButton(number = 0, display = displayText)
+                    CalcEqualsButton(display = displayText)
+                }
+            }
+            Column {
+                val operations = listOf("+", "-", "*", "/")
+                for (operation in operations) {
+                    CalcOperationButton(operation = operation, display = displayText)
+                }
+            }
+        }
     }
 }
 
