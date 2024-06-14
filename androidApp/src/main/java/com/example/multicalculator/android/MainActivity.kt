@@ -51,5 +51,18 @@ fun CalcDisplay(display: MutableState<String>) {
             .fillMaxWidth()
     )
 }
+//numeric button in the calculator
+@Composable
+fun CalcNumericButton(number: Int, display: MutableState<String>) {
+    Button(
+        onClick = {
+            display.value = if (display.value == "0") number.toString() else display.value + number.toString()
+        },
+        modifier = Modifier.padding(4.dp)
+    ) {
+        Text(text = number.toString())
+    }
+}
+
 
 
