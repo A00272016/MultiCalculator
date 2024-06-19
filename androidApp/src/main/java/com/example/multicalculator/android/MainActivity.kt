@@ -42,7 +42,6 @@ fun CalcRow(onPress: (Int) -> Unit, startNum: Int, numButtons: Int) {
         }
     }
 }
-
 @Composable
 fun CalcDisplay(display: MutableState<String>) {
     Text(
@@ -53,7 +52,6 @@ fun CalcDisplay(display: MutableState<String>) {
             .fillMaxWidth()
     )
 }
-
 @Composable
 fun CalcNumericButton(number: Int, onPress: (Int) -> Unit) {
     Button(
@@ -63,7 +61,6 @@ fun CalcNumericButton(number: Int, onPress: (Int) -> Unit) {
         Text(text = number.toString())
     }
 }
-
 @Composable
 fun CalcOperationButton(operation: String, onPress: (String) -> Unit,
                         display: MutableState<String>,
@@ -134,6 +131,48 @@ fun CalcView() {
             CalcDisplay(display = displayText)
         }
         Row {
+            fun numberPress(btnNum: Int) {
+                if (complete) {
+                    leftNumber = 0
+                    rightNumber = 0
+                    operation = ""
+                    complete = false
+                }
+                if (operation.isNotEmpty() && !complete) {
+                    rightNumber = rightNumber * 10 + btnNum
+                } else if (operation.isBlank() && !complete) {
+                    leftNumber = leftNumber * 10 + btnNum
+                }
+            }
+            fun operationPress(op: String) {
+                if (!complete) {
+                    operation = op
+                    displayText.value = "0"
+                }
+            }
+            fun equalsPress() {
+                if (operation.isNotEmpty() && !complete) {
+                    val left = leftNumber
+                    val right = rightNumber
+
+                    // Perform calculation based on the operation
+                    when (operation) {
+                        "+" -> displayText.value = (left + right).toString()
+                        "-" -> displayText.value = (left - right).toString()
+                        "*" -> displayText.value = (left * right).toString()
+                        "/" -> {
+                            if (right != 0) {
+                                displayText.value = (left / right).toString()
+                            } else {
+                                displayText.value = "Error"
+                            }
+                        }
+                        else -> displayText.value = "Error"
+                    }
+
+                    complete = true
+                }
+            }
             Column {
                 for (i in 7 downTo 1 step 3) {
                     CalcRow(onPress = { numberPress(it) }, startNum = i, numButtons = 3)
@@ -150,30 +189,5 @@ fun CalcView() {
                 }
             }
         }
-    }
-
-    fun numberPress(btnNum: Int) {
-        if (complete) {
-            leftNumber = 0
-            rightNumber = 0
-            operation = ""
-            complete = false
-        }
-
-        if (operation.isNotEmpty() && !complete) {
-            rightNumber = rightNumber * 10 + btnNum
-        } else if (operation.isBlank() && !complete) {
-            leftNumber = leftNumber * 10 + btnNum
-        }
-    }
-
-    fun operationPress(op: String) {
-        if (!complete) {
-            operation = op
-        }
-    }
-
-    fun equalsPress() {
-        complete = true
     }
 }
