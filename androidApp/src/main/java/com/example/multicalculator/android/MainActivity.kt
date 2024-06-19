@@ -72,7 +72,8 @@ fun CalcView() {
             complete = true
         }
     }
-    Column(modifier = Modifier.background(Color.LightGray)) {
+    Column(modifier = Modifier.background(Color.Magenta)
+        .fillMaxSize()) {
         Row {
             CalcDisplay(display = leftNumber.toString())
         }
