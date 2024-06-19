@@ -1,6 +1,3 @@
-//A00272016 - Milankumar Pandya
-//Assignment-2 Create A Calculator UI
-
 package com.example.multicalculator.android
 
 import android.os.Bundle
@@ -14,6 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,17 +32,17 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-//row in the calculator that holds numeric buttons
+
 @Composable
-fun CalcRow(display: MutableState<String>, startNum: Int, numButtons: Int) {
+fun CalcRow(onPress: (Int) -> Unit, startNum: Int, numButtons: Int) {
     val endNum = startNum + numButtons
     Row(modifier = Modifier.padding(0.dp)) {
         for (i in startNum until endNum) {
-            CalcNumericButton(number = i, display = display)
+            CalcNumericButton(number = i, onPress = onPress)
         }
     }
 }
-//display of the calculator
+
 @Composable
 fun CalcDisplay(display: MutableState<String>) {
     Text(
@@ -51,21 +53,20 @@ fun CalcDisplay(display: MutableState<String>) {
             .fillMaxWidth()
     )
 }
-//numeric button in the calculator
+
 @Composable
-fun CalcNumericButton(number: Int, display: MutableState<String>) {
+fun CalcNumericButton(number: Int, onPress: (Int) -> Unit) {
     Button(
-        onClick = {
-            display.value = if (display.value == "0") number.toString() else display.value + number.toString()
-        },
+        onClick = { onPress(number) },
         modifier = Modifier.padding(4.dp)
     ) {
         Text(text = number.toString())
     }
 }
-//operation button in the calculator
+
 @Composable
-fun CalcOperationButton(operation: String, display: MutableState<String>,
+fun CalcOperationButton(operation: String, onPress: (String) -> Unit,
+                        display: MutableState<String>,
                         firstNumber: MutableState<Double?>,
                         operator: MutableState<String?>)
 {
@@ -80,9 +81,10 @@ fun CalcOperationButton(operation: String, display: MutableState<String>,
         Text(text = operation)
     }
 }
-//equals button in the calculator
+
 @Composable
-fun CalcEqualsButton(display: MutableState<String>,
+fun CalcEqualsButton(onPress: () -> Unit,
+                     display: MutableState<String>,
                      firstNumber: MutableState<Double?>,
                      operator: MutableState<String?>)
 {
@@ -94,8 +96,8 @@ fun CalcEqualsButton(display: MutableState<String>,
                     "+" -> it + secondNumber
                     "-" -> it - secondNumber
                     "*" -> it * secondNumber
-                    "/" -> if (secondNumber != 0.0) it / secondNumber else "Error"
-                    else -> "Error"
+                    "/" -> if (secondNumber != 0.0) it / secondNumber else 0.0  // Handle division by zero
+                    else -> 0.0
                 }
                 display.value = result.toString()
             }
@@ -107,7 +109,7 @@ fun CalcEqualsButton(display: MutableState<String>,
         Text(text = "=")
     }
 }
-// Preview function to see the calculator UI in the preview pane
+
 @Preview
 @Composable
 fun DefaultPreview() {
@@ -115,9 +117,14 @@ fun DefaultPreview() {
         CalcView()  // Use the CalcView function here
     }
 }
-//main view for the calculator
+
 @Composable
 fun CalcView() {
+    var leftNumber by rememberSaveable { mutableStateOf(0) }
+    var rightNumber by rememberSaveable { mutableStateOf(0) }
+    var operation by rememberSaveable { mutableStateOf("") }
+    var complete by rememberSaveable { mutableStateOf(false) }
+
     val displayText = remember { mutableStateOf("0") }
     val firstNumber = remember { mutableStateOf<Double?>(null) }
     val operator = remember { mutableStateOf<String?>(null) }
@@ -129,21 +136,44 @@ fun CalcView() {
         Row {
             Column {
                 for (i in 7 downTo 1 step 3) {
-                    CalcRow(display = displayText, startNum = i, numButtons = 3)
+                    CalcRow(onPress = { numberPress(it) }, startNum = i, numButtons = 3)
                 }
                 Row {
-                    CalcNumericButton(number = 0, display = displayText)
-                    CalcEqualsButton(display = displayText, firstNumber = firstNumber, operator = operator)
+                    CalcNumericButton(number = 0, onPress = { numberPress(it) })
+                    CalcEqualsButton(onPress = { equalsPress() }, display = displayText, firstNumber = firstNumber, operator = operator)
                 }
             }
             Column {
                 val operations = listOf("+", "-", "*", "/")
                 for (operation in operations) {
-                    CalcOperationButton(operation = operation, display = displayText, firstNumber = firstNumber, operator = operator)
+                    CalcOperationButton(operation = operation, onPress = { operationPress(it) }, display = displayText, firstNumber = firstNumber, operator = operator)
                 }
             }
         }
     }
+
+    fun numberPress(btnNum: Int) {
+        if (complete) {
+            leftNumber = 0
+            rightNumber = 0
+            operation = ""
+            complete = false
+        }
+
+        if (operation.isNotEmpty() && !complete) {
+            rightNumber = rightNumber * 10 + btnNum
+        } else if (operation.isBlank() && !complete) {
+            leftNumber = leftNumber * 10 + btnNum
+        }
+    }
+
+    fun operationPress(op: String) {
+        if (!complete) {
+            operation = op
+        }
+    }
+
+    fun equalsPress() {
+        complete = true
+    }
 }
-
-
